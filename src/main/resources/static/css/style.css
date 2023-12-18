@@ -1,0 +1,31 @@
+/* Custom CSS for sidebar/navbar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px; /* Adjust as needed */
+    background-color: #f8f9fa;
+    padding-top: 20px;
+}
+
+.sidebar a.nav-link {
+    color: #333;
+}
+
+.sidebar .btn-primary {
+    width: 100%;
+}
+
+.content {
+    margin-left: 250px; /* Same as sidebar width */
+    padding: 15px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+#productTable {
+    display: none;
+}

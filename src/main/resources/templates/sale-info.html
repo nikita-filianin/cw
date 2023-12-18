@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link th:href="@{../static/css/style.css}" rel="stylesheet">
+    <style>
+        #productTable {
+            display: none;
+        }
+
+        .product-list {
+            text-align: center; /* Center the product list */
+        }
+    </style>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar/Navbar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+            <!-- Logo -->
+            <div>
+                <img class="img-fluid" th:src="@{../static/images/warehouse_logo.png}"/>
+            </div>
+
+            <!-- Links -->
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/users}">Users</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/sales}">Sales</a></li>
+            </ul>
+
+            <!-- Sign-in and Sign-up buttons -->
+            <div sec:authorize="!isAuthenticated()" class="mt-auto">
+                <button class="btn btn-primary btn-sm btn-block" type="button"
+                        onclick="window.location.href = '/signin'">
+                    Sign In
+                </button>
+                <button class="btn btn-primary btn-sm btn-block mt-2" type="button"
+                        onclick="window.location.href = '/signup'">
+                    Sign Up
+                </button>
+            </div>
+
+            <div sec:authorize="isAuthenticated()">
+                <a class="btn btn-info" th:href="@{/profile}"><span sec:authentication="principal.name"></span></a>
+                <form action="/logout" method="post">
+                    <button type="submit" style="text-align: center; width: 100%"
+                            class="btn btn-primary btn-sm btn-block mt-2">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 content">
+
+            <div class="sale-info">
+                <h2>Sale Information</h2>
+                <p>Sale Date: <span th:text="${sale.saleDate}"></span></p>
+                <p>Total Sale Amount: <span th:text="${sale.getTotalSaleAmount()}"></span> USD</p>
+            </div>
+
+            <!-- Product List Section -->
+            <div class="product-list">
+                <div class="container mt-4">
+                    <h1>Product List</h1>
+                    <button id="toggleButton" class="btn btn-primary mb-2">Toggle Table</button>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="productTable">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Product Seller</th>
+                                <th>Total Price</th>
+                                <th>Photo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="salepr:${sale.getSaleProducts()}">
+                                <td th:text="${salepr.product.name}"></td>
+                                <td th:text="${salepr.product.description}"></td>
+                                <td th:text="${salepr.quantity}"></td>
+                                <td th:text="${salepr.product.user.name}"></td>
+                                <td th:text="${salepr.getTotalPrice()}">USD</td>
+                                <td>
+                                    <img th:if="${salepr.product.imageId == null}" height="60px" width="100px"
+                                         src="https://media.tenor.com/yheo1GGu3FwAAAAd/rick-roll-rick-ashley.gif"
+                                         style="width: 100px; height: 100px;"/>
+                                    <img th:if="${salepr.product.imageId != null}" height="60px" width="100px" th:src="@{/images/{id}(id=${salepr.product.imageId})}"
+                                         style="width: 100px; height: 100px;"/>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Bootstrap and jQuery JavaScript links (required for Bootstrap functionality) -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    // Toggle the entire table's collapse state when the button is clicked
+                    $("#toggleButton").click(function () {
+                        $("#productTable").toggle();
+                    });
+                });
+            </script>
+        </main>
+    </div>
+</div>
+</body>
+</html>

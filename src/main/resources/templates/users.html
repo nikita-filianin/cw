@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link th:href="@{../static/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar/Navbar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+            <!-- Logo -->
+            <div>
+                <img class="img-fluid" th:src="@{./static/images/warehouse_logo.png}"/>
+            </div>
+
+            <!-- Links -->
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/users}">Users</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/sales}">Sales</a></li>
+            </ul>
+
+            <!-- Sign-in and Sign-up buttons -->
+            <div sec:authorize="!isAuthenticated()" class="mt-auto">
+                <button class="btn btn-primary btn-sm btn-block" type="button"
+                        onclick="window.location.href = '/signin'">
+                    Sign In
+                </button>
+                <button class="btn btn-primary btn-sm btn-block mt-2" type="button"
+                        onclick="window.location.href = '/signup'">
+                    Sign Up
+                </button>
+            </div>
+
+            <div sec:authorize="isAuthenticated()">
+                <a class="btn btn-info" th:href="@{/profile}"><span sec:authentication="principal.name"></span></a>
+                <form action="/logout" method="post">
+                    <button type="submit" style="text-align: center; width: 100%"
+                            class="btn btn-primary btn-sm btn-block mt-2">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 content">
+            <h3>Users</h3>
+
+            <!-- Dropdown menu for roles -->
+            <div class="form-group">
+                <label for="roleSelect">Filter by Role:</label>
+                <select class="form-control" id="roleSelect">
+                    <option value="">All</option>
+                    <option value="[ADMIN]">Admin</option>
+                    <option value="[MANAGER]">Manager</option>
+                    <option value="[CUSTOMER]">Customer</option>
+                </select>
+            </div>
+
+            <table style="width:80%" border="1" class="table table-striped table-responsive-md">
+                <thead>
+                <tr>
+                    <th>Login</th>
+                    <th>Name</th>
+                    <th sec:authorize="hasAuthority('ADMIN')">Action</th>
+                    <th>More info</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user:${users}" class="user-row" th:data-role="${user.roles}">
+                    <td th:text="${user.login}"></td>
+                    <td th:text="${user.name}"></td>
+                    <td sec:authorize="hasAuthority('ADMIN')">
+                        <a th:href="@{/user/{id}/edit(id=${user.id})}" class="btn btn-primary"
+                           style="display: inline-block; margin-right: 10px;">Update</a>
+                        <form th:action="@{/user/__${user.id}__/delete}" method="post" style="display: inline-block;">
+                            <button type="submit" class="btn btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                    <td><a th:href="@{/user/__${user.id}__}">More Info</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.getElementById('roleSelect').addEventListener('change', function () {
+        const selectedRole = this.value;
+        const userRows = document.querySelectorAll('.user-row');
+
+        userRows.forEach(function (row) {
+            const userRole = row.getAttribute('data-role');
+            if (!selectedRole || userRole === selectedRole) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>

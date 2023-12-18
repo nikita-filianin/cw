@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link th:href="@{../static/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar/Navbar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+            <!-- Logo -->
+            <div>
+                <img class="img-fluid" th:src="@{../../static/images/warehouse_logo.png}"/>
+            </div>
+
+            <!-- Links -->
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/users}">Users</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/sales}">Sales</a></li>
+            </ul>
+
+            <!-- Sign-in and Sign-up buttons -->
+            <div sec:authorize="!isAuthenticated()" class="mt-auto">
+                <button class="btn btn-primary btn-sm btn-block" type="button"
+                        onclick="window.location.href = '/signin'">
+                    Sign In
+                </button>
+                <button class="btn btn-primary btn-sm btn-block mt-2" type="button"
+                        onclick="window.location.href = '/signup'">
+                    Sign Up
+                </button>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <a class="btn btn-info" th:href="@{/profile}"><span sec:authentication="principal.name"></span></a>
+                <form action="/logout" method="post">
+                    <button type="submit" style="text-align: center; width: 100%"
+                            class="btn btn-primary btn-sm btn-block mt-2">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 content">
+            <h3>Sales List</h3>
+            <a sec:authorize="hasAuthority('CUSTOMER') or hasAuthority('ADMIN')" th:href="@{/sales/create}"
+               class="btn btn-primary btn-sm mb-3">Add Sale</a>
+            <!-- Add this form right above the table -->
+            <div class="mb-3">
+                <form sec:authorize="hasAuthority('CUSTOMER') or hasAuthority('ADMIN')" th:action="@{/sales/}" method="get">
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="mySales">My Sales:</label>
+                            <input type="checkbox" class="form-control" id="mySales" name="mySales" value="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+            </div>
+
+            <table style="width:80%" border="1" class="table table-striped table-responsive-md">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sale Title</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Size</th>
+                    <th sec:authorize="hasAuthority('CUSTOMER') or hasAuthority('ADMIN')">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="sortableTableBody">
+                <tr th:each="sale, index : ${sales}" th:attr="data-sort=${sale.id}">
+                    <td th:text="${sale.id}"></td>
+                    <td>
+                        <a th:href="@{/sale/{id}(id=${sale.id})}"><p th:text="${sale.getSaleTitle()}"></p></a>
+                    </td>
+                    <td th:text="${sale.user.name}"></td>
+                    <td th:text="${sale.saleDate}"></td>
+                    <td th:text="${sale.saleProducts.size()}"></td>
+                    <td sec:authorize="hasAuthority('CUSTOMER') or hasAuthority('ADMIN')">
+                        <form th:if="${#authorization.expression('hasAuthority(''ADMIN'')')} or ${#authentication.name.equals(sale.user.login)}" th:action="@{/sale/__${sale.id}__/delete}" method="post"
+                              style="display: inline-block;">
+                            <button type="submit" class="btn btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <script>
+                // Sort the table rows by ID in descending order
+                var tableBody = document.getElementById('sortableTableBody');
+                var rows = Array.from(tableBody.getElementsByTagName('tr'));
+
+                rows.sort(function (a, b) {
+                    var idA = parseInt(a.getAttribute('data-sort'));
+                    var idB = parseInt(b.getAttribute('data-sort'));
+                    return idB - idA;
+                });
+
+                rows.forEach(function (row) {
+                    tableBody.appendChild(row);
+                });
+            </script>
+        </main>
+    </div>
+</div>
+</body>
+</html>
