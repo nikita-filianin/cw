@@ -13,7 +13,7 @@
     <div>
         <img class="img-fluid" th:src="@{./static/images/warehouse_logo.png}"/>
     </div>
-    <form th:action="@{/signup}" method="post" style="max-width: 350px; margin: 0 auto;">
+    <form th:action="@{/signup}" method="post" style="max-width: 350px; margin: 0 auto;" onsubmit="return comparePwd()">
 
         <div class="border border-secondary p-3 rounded">
             <p>Register in Warehouse</p>
@@ -24,8 +24,10 @@
                 <input type="text" name="name" class="form-control" placeholder="Name" required/>
             </p>
             <p>
-                <input type="password" name="password" class="form-control" placeholder="Password" required/>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Password" minlength="3" required/>
             </p>
+            <p>
+                <input type="password" id="verifyPassword" name="verifyPassword" class="form-control" placeholder="Confirm Password" required/>
             <p>
                 <input type="submit" value="Sign Up" class="btn btn-primary"/>
             </p>
@@ -33,4 +35,17 @@
     </form>
 </div>
 </body>
+<script>
+    function comparePwd() {
+        const password = document.getElementById("password").value;
+        const verifyPassword = document.getElementById("verifyPassword").value;
+
+        if (password !== verifyPassword) {
+            alert("Паролі не співпадають!");
+            return false;
+        }
+
+        return true;
+    }
+</script>
 </html>

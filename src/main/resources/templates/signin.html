@@ -17,12 +17,17 @@
 
         <div class="border border-secondary p-3 rounded">
             <p>Logging in Warehouse</p>
+            
+            <p th:if="${param.error}">
+                <span style="color: red;">Invalid username or password. Please try again.</span>
+            </p>
+
             <p>
                 <input type="text" name="username" class="form-control" placeholder="Login" required autofocus/>
             </p>
             <p>
                 <label>
-                    <input type="password" name="password" class="form-control" placeholder="Password" required/>
+                    <input type="password" name="password" class="form-control" placeholder="Password" minlength="3" required/>
                 </label>
             </p>
             <p>
