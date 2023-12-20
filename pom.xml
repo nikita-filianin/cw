@@ -14,10 +14,9 @@
     <name>SpringWarehouseWeb</name>
     <description>SpringWarehouseWeb</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
     </properties>
     <dependencies>
-        <!-- ваші залежності залишаються незмінними -->
     </dependencies>
 
     <build>
@@ -39,8 +38,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
